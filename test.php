@@ -1,4 +1,10 @@
 <?php
+
+if (!isset(glob('tests/*.json')[$_GET['number']])) {
+    header('HTTP/1.0 404 Not Found');
+    exit;
+}
+
 $alltests = glob('tests/*.json');
 $number = $_GET['number'];
 $test = file_get_contents($alltests[$number]);
