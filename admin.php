@@ -1,4 +1,10 @@
 <?php
+
+if (isset($_POST['upload'])) {
+    header('Location: list.php');
+	exit;
+}
+
 if (isset($_POST['upload'])) {
 	if (isset($_FILES['myfile'])) {
     $file = $_FILES['myfile'];
