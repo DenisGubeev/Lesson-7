@@ -10,7 +10,7 @@ $number = $_GET['number'];
 $test = file_get_contents($alltests[$number]);
 $test = json_decode($test, true);
 if (isset($_POST['check-test'])) {
-    function checkTest($myfile) {
+    function checktest($myfile) {
         $i = 0;
         $questions = 0;
         foreach ($myfile as $key => $item) {
@@ -28,9 +28,39 @@ if (isset($_POST['check-test'])) {
             echo '</div>';
             echo '<hr>';
         }
-        echo '<p style="font-weight: bold;">Правильных ответов: ' . $i . ' из ' . $questions . '</p>';
     }
 }
+
+function сounter($myfile)
+{
+    $i = 0;
+    $questions = 0;
+    foreach ($myfile as $key => $item) {
+        $questions++;
+        if ($item['correct_answer'] === $_POST['answer' . $key]) {
+            $i++;
+        }
+    }
+    return ['correct' => $i, 'total' => $questions];
+}
+if (isset($_POST['check-test'])) {
+    $testname = basename($alltests[$number]);
+    $username = str_replace(' ', '', $_POST['username']);
+    $date = date("d-m-Y");
+    $correctanswers = сounter($test)['correct'];
+    $totalanswers = сounter($test)['total'];
+    $variables = [
+        'testname' => $testname,
+        'username' => $username,
+        'date' => $date,
+        'correctanswers' => $correctanswers,
+        'totalanswers' => $totalanswers
+    ];
+}
+if (isset($_POST['picture'])) {
+    include 'picture.php';
+}
+
 ?>
 
 <!doctype html>
@@ -56,8 +86,20 @@ if (isset($_POST['check-test'])) {
             <input type="submit" name="check-test" value="Проверить">
         </form>
     <?php endif; ?>
-    <div>
-        <?php if (isset($_POST['check-test'])) echo checkTest($test); ?>
+    
+    <?php if (isset($_POST['check-test'])): ?>
+    <div class="check-test">
+        <?php checkTest($test) ?>
+        <p style="font-weight: bold;">Правильных ответов: <?php echo "$correctanswers из $totalanswers" ?></p>
+        <h2>Для генерации сертификата, <?php echo $username ?>: </h2>
+        <form method="POST">
+            <input type="submit" name="picture" value="Генерация">
+            <?php foreach ($variables as $key => $variable): ?>
+                <input type="hidden" value="<?php echo $variable ?>" name="<?php echo $key ?>">
+            <?php endforeach; ?>
+        </form>
+    </div>
+<?php endif; ?>
     </div>
 
 </body>
